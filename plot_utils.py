@@ -1,5 +1,5 @@
 """
-Convinience functions for graphing using matplotlib.
+Convenience functions for graphing using matplotlib.
 """
 
 import numpy as np
