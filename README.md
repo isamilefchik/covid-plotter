@@ -1,7 +1,5 @@
 # COVID-19 Plotter
 
-### Written by Isa Milefchik
-
 ![Example graphs](./example-graph.png)
 
 
