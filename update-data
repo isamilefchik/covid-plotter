@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cd ./jhu-data
+git pull
+cd ..
+cd ./nyt-data
+git pull
+cd ..

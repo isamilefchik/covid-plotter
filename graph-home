@@ -1,0 +1,4 @@
+#!/bin/bash
+
+python3 plot_nyt.py --state "California"
+python3 plot_nyt.py --state "California" --county "Los Angeles"
