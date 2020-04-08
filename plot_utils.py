@@ -66,7 +66,7 @@ def plot_bar(title, axis, x_vals, y_vals_set, bar_labels, bar_colors, xlabel, yl
 
             # Calc 7-day avgs
             for j, _ in enumerate(y_vals):
-                day_set = y_vals[max(0, j-2) : min(len(y_vals), j+3)]
+                day_set = y_vals[max(0, j-3) : min(len(y_vals), j+4)]
                 avg_vals.append(sum(day_set) / len(day_set))
 
             axis.plot(x_vals, avg_vals, label=bar_labels[i] + " avg.",
