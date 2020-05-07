@@ -1,6 +1,6 @@
 # COVID-19 Plotter
 
-![Example graphs](./example-graph.png)
+![Example graphs](./example.png)
 
 
 	usage: plot_nyt.py [-h] --state STATE [--county COUNTY]
