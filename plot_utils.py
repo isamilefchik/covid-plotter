@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 TITLE_FONTSIZE = 9
 AXIS_LABEL_FONTSIZE = 9
 X_TICK_STEPS = 10
+NUM_DAYS_AVG = 7
 
 def plot_line(title, axis, x_vals, y_vals_set, line_labels, line_colors, xlabel, ylabel):
     """
@@ -64,12 +65,37 @@ def plot_bar(title, axis, x_vals, y_vals_set, bar_labels, bar_colors, xlabel, yl
         if plot_avg:
             avg_vals = []
 
-            # Calc 7-day avgs
-            for j, _ in enumerate(y_vals):
-                day_set = y_vals[max(0, j-3) : min(len(y_vals), j+4)]
-                avg_vals.append(sum(day_set) / len(day_set))
+            set_width = int(NUM_DAYS_AVG / 2)
+            y_vals_len = len(y_vals)
 
-            axis.plot(x_vals, avg_vals, label=bar_labels[i] + " avg.",
+            for j in range(y_vals_len):
+
+                # Left boundary
+                if j < set_width:
+                    day_set = y_vals[0 : j+set_width+1]
+                    avg_vals.append(sum(day_set) / len(day_set))
+
+                # Right boundary
+                elif j > len(y_vals)-set_width-1:
+                    interp_slope = avg_vals[-1] - avg_vals[-2]
+                    interp_val = avg_vals[-1] + interp_slope
+                    real_val = y_vals[j]
+                    interp_weight = set_width / (set_width + 1.)
+                    real_weight = 1. / (set_width + 1.)
+
+                    # Rolling average is weighted sum between interpolated slope
+                    # and the real value (just a hack to fit curve to data
+                    # better at this end of the graph)
+                    avg_val = interp_val*interp_weight + real_val*real_weight
+                    avg_vals.append(avg_val)
+
+                else:
+                    day_set = y_vals[j-set_width : j+set_width+1]
+                    avg_vals.append(sum(day_set) / len(day_set))
+
+            axis.plot(x_vals,
+                      avg_vals,
+                      label=bar_labels[i] + " {}-day avg.".format(NUM_DAYS_AVG),
                       color=get_avg_color(bar_colors[i]))
 
     axis.set_xticks(np.arange(0, len(x_vals), step=X_TICK_STEPS))
