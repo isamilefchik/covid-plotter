@@ -41,7 +41,7 @@ def plot_state_nyt(state):
     for i, _ in enumerate(d_nums):
         d_nums[i] = int(d_nums[i])
 
-    standard_covid_plot(state, dates, c_nums, d_nums)
+    standard_covid_plot("NYT COVID Data", state, dates, c_nums, d_nums)
 
 def plot_county_nyt(state, county):
     """ Plot NYT data for a given county. """
@@ -74,7 +74,7 @@ def plot_county_nyt(state, county):
     for i, _ in enumerate(d_nums):
         d_nums[i] = int(d_nums[i])
 
-    standard_covid_plot(county + " County, " + state, dates, c_nums, d_nums)
+    standard_covid_plot("NYT COVID Data", county + " County, " + state, dates, c_nums, d_nums)
 
 def main():
     """ Main function. """

@@ -1,8 +1,44 @@
 #!/bin/bash
 
+echo ""
+echo "UPDATING JHU DATA"
+echo "=========================================="
+echo ""
+
 cd ./jhu-data
 git pull
 cd ..
+
+echo ""
+echo "Done."
+
+
+
+echo ""
+echo "UPDATING NYT DATA"
+echo "=========================================="
+echo ""
+
 cd ./nyt-data
 git pull
 cd ..
+
+echo ""
+echo "Done."
+
+
+
+echo ""
+echo "UPDATING COVID TRACKING PROJECT DATA"
+echo "=========================================="
+echo ""
+
+if [ ! -d "./covidtracking-data" ]
+then
+    mkdir "./covidtracking-data"
+fi
+
+wget -q "https://covidtracking.com/api/v1/states/daily.csv" -O ./covidtracking-data/state-daily.csv 
+wget -q "https://covidtracking.com/api/v1/us/daily.csv" -O ./covidtracking-data/us-daily.csv 
+
+echo "Done."
