@@ -1,20 +1,6 @@
 #!/bin/bash
 
 echo ""
-echo "UPDATING JHU DATA"
-echo "=========================================="
-echo ""
-
-cd ./jhu-data
-git pull
-cd ..
-
-echo ""
-echo "Done."
-
-
-
-echo ""
 echo "UPDATING NYT DATA"
 echo "=========================================="
 echo ""
