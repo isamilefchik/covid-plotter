@@ -6,7 +6,7 @@ echo "=========================================="
 echo ""
 
 cd ./nyt-data
-git pull
+git pull origin master
 cd ..
 
 echo ""
