@@ -9,7 +9,8 @@ import pandas as pd
 import numpy as np
 import urllib
 
-from plot_utils import standard_covid_plot, hospitalizations_plot, plot_bar, plot_line
+from plot_utils import standard_covid_plot, hospitalizations_plot, \
+        plot_bar, plot_line, plot_estimated_daily_infections
 
 mpl.rcParams['text.usetex'] = False
 
@@ -23,14 +24,19 @@ def plot_ca(county):
     cases_data_url = "https://data.ca.gov/dataset/590188d5-8545-4c93-" \
             + "a9a0-e230f0db7290/resource/926fd08f-cc91-4828-af38-" \
             + "bd45de97f8c3/download/statewide_cases.csv"
+    test_data_url = "https://data.ca.gov/dataset/efd6b822-7312-477c-" \
+            + "922b-bccb82025fbe/resource/b6648a0d-ff0a-4111-b80b-" \
+            + "febda2ac9e09/download/statewide_testing.csv"
 
     hospital_csv_df = pd.read_csv(hospital_data_url)
     cases_csv_df = pd.read_csv(cases_data_url)
+    tests_csv_df = pd.read_csv(test_data_url)
 
     hospital_df = hospital_csv_df.loc[hospital_csv_df['county'] == county]
     cases_df = cases_csv_df.loc[cases_csv_df['county'] == county]
     hospital_df = hospital_df.to_numpy()
     cases_df = cases_df.to_numpy()
+    tests_csv_df = tests_csv_df.to_numpy()
 
     cases = cases_df[:, 3]
     deaths = cases_df[:, 4]
@@ -115,6 +121,12 @@ def plot_ca(county):
     cases = cases_df[:, 1]
     deaths = cases_df[:, 2]
     standard_covid_plot("CA Gov COVID19 Data - " + county, county, dates, cases, deaths)
+
+    cases = cases_df[:, 3]
+    tests = tests_csv_df[:, 1]
+
+    test_positivity = cases / tests
+    plot_estimated_daily_infections(county, dates, np.array(test_positivity, dtype=np.float32), cases)
 
 
 def main():

@@ -12,14 +12,14 @@ FIGURE_TITLE_FONTSIZE = 16
 TITLE_FONTSIZE = 9
 AXIS_LABEL_FONTSIZE = 9
 LEGEND_FONTSIZE = 8
-X_TICK_STEPS = 10
+NUM_TICKS = 10
 
 # Savitsky-Golay smoothing filter parameters
 WINDOW_SIZE = 25
 POLYORDER = 2
 
 # Average filter parameters
-AVG_WINDOW = 15
+AVG_WINDOW = 7
 
 # Default smoothing method
 DEFAULT_SMOOTHING = 'avg'
@@ -51,7 +51,7 @@ def plot_line(title, axis, x_vals, y_vals_set, line_labels,
         axis.plot(x_vals, y_vals, marker=".",
                   label=line_labels[i], color=line_colors[i])
 
-    axis.set_xticks(np.arange(0, len(x_vals), step=X_TICK_STEPS))
+    axis.set_xticks(np.arange(0, len(x_vals), step=len(x_vals)/NUM_TICKS))
     axis.legend(loc=2, fontsize=LEGEND_FONTSIZE)
 
 
@@ -104,7 +104,7 @@ def plot_bar(title, axis, x_vals, y_vals_set, bar_labels,
                       #  label=bar_labels[i] + " smoothed",
                       color=get_smooth_color(bar_colors[i]))
 
-    axis.set_xticks(np.arange(0, len(x_vals), step=X_TICK_STEPS))
+    axis.set_xticks(np.arange(0, len(x_vals), step=len(x_vals)/NUM_TICKS))
     axis.legend(loc=2, fontsize=LEGEND_FONTSIZE)
 
 
@@ -321,6 +321,38 @@ def hospitalizations_plot(location, dates, h_nums, icu_nums):
 
     plot_cumulatives()
     plot_derivs()
+
+    fig.tight_layout()
+    plt.show()
+
+
+def plot_estimated_daily_infections(location, dates, test_positivity_series, cases):
+    """
+    Estimated daily infections graphs.
+
+    location                - String indicating the location of the data (e.g. country or state or city)
+    dates                   - List of dates of data (x-values of plot)
+    test_positivity_series  - Numpy array of (# positive tests)/(# of total tests) per day
+    cases                   - Numpy array of number of new cases (daily)
+
+    Returns: None
+    """
+
+    fig, axis = plt.subplots(nrows=1, ncols=1, figsize=(12, 8))
+
+    prevalence_ratio = (np.sqrt(test_positivity_series) * 16) + 2.5
+
+    daily_new_infections = prevalence_ratio * cases
+
+    plot_bar(title=location + " COVID-19 Estimated Daily New Infections",
+             axis=axis,
+             x_vals=dates,
+             y_vals_set=[daily_new_infections],
+             bar_labels=["New infections"],
+             bar_colors=["lightcoral"],
+             xlabel="data",
+             ylabel="# of new infections per day",
+             smooth=DEFAULT_SMOOTHING)
 
     fig.tight_layout()
     plt.show()

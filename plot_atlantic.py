@@ -8,7 +8,8 @@ import matplotlib as mpl
 import pandas as pd
 import numpy as np
 
-from plot_utils import standard_covid_plot, hospitalizations_plot, plot_bar, plot_line
+from plot_utils import standard_covid_plot, hospitalizations_plot, plot_bar, \
+        plot_line, plot_estimated_daily_infections
 
 mpl.rcParams['text.usetex'] = False
 
@@ -24,18 +25,19 @@ def plot_state_covidtracking(state):
     # Read CSV file
     csv_df = pd.read_csv('./covidtracking-data/state-daily.csv')
     state_df = csv_df.loc[csv_df['state'] == state]
-    state_df = state_df.to_numpy()
 
-    dates = np.flip(state_df[:, 0], 0)
-    cases = np.flip(state_df[:, 2], 0)
-    deaths = np.flip(state_df[:, 16], 0)
-    hospitalized = np.flip(state_df[:, 5], 0)
-    icu = np.flip(state_df[:, 7], 0)
-    positives = np.flip(state_df[:, 2], 0)
-    negatives = np.flip(state_df[:, 3], 0)
+    dates_int = np.flip(state_df['date'].to_numpy())
+    cases = np.flip(state_df['positive'].to_numpy())
+    deaths = np.flip(state_df['death'].to_numpy())
+    hospitalized = np.flip(state_df['hospitalizedCurrently'].to_numpy())
+    icu = np.flip(state_df['inIcuCurrently'].to_numpy())
+    positives = np.flip(state_df['positive'].to_numpy())
+    negatives = np.flip(state_df['negative'].to_numpy())
 
-    for i, _ in enumerate(dates):
-        dates[i] = str(dates[i])[4:6] + '/' + str(dates[i])[6:8]
+    dates = []
+    for date_int in dates_int:
+        dates.append(str(date_int)[4:6] + '/' + str(date_int)[6:8])
+    dates = np.array(dates)
 
     cases[pd.isnull(cases)] = 0
     deaths[pd.isnull(deaths)] = 0
@@ -54,6 +56,8 @@ def plot_state_covidtracking(state):
 
     fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(12, 8))
 
+    positives = np.diff(positives, prepend=0)
+    negatives = np.diff(negatives, prepend=0)
     plot_bar("COVID-19 Test Results",
              axes,
              dates,
@@ -61,7 +65,7 @@ def plot_state_covidtracking(state):
              ["Number of negatives", "Number of positives"],
              ["green", "red"],
              "Date",
-             "Number",
+             "Count",
              "avg")
     fig.tight_layout()
     plt.show()
@@ -71,14 +75,20 @@ def plot_state_covidtracking(state):
     plot_bar("COVID-19 Test Results",
              axes,
              dates,
-             [positives / (positives + negatives)],
+             [100.*(positives / (positives + negatives + 1e-19))],
              ["Percent positive"],
              ["green"],
              "Date",
-             "Number",
+             "Percent",
              "avg")
     fig.tight_layout()
     plt.show()
+
+    d_cases = np.diff(cases, 1)
+    d_cases = np.insert(d_cases, 0, 0, axis=0)
+    test_positivity = positives / (positives + negatives + 1e-19)
+    test_positivity = np.array(test_positivity, dtype=np.float32)
+    plot_estimated_daily_infections(state, dates, test_positivity, d_cases)
 
 
 def main():
